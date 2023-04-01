@@ -1,0 +1,12 @@
+{
+  "app": {
+    "lang": "cs"
+  },
+  "db": {
+    "host": "127.0.0.1",
+    "database": "c156DBIP",
+    "charset": "utf8mb4",
+    "user": "fill in local config",
+    "password": "fill in local config"
+  }
+}

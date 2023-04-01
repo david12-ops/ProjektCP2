@@ -1,0 +1,74 @@
+<h2>{{title}}</h2>
+<form method = "post">
+    <div class="form-group">
+        <label for="name">Jmeno</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{employee.name}}" required>
+        {{#errors.name}}<div class="d-block invalid-feedback">{{errors.name}}</div>{{/errors.name}}
+    </div>
+     <div class="form-group">
+        <label for="surname">Příjmení</label>
+        <input type="text" class="form-control" id="surname" name="surname" value="{{employee.surname}}" required>
+        {{#errors.surname}}<div class="d-block invalid-feedback">{{errors.surname}}</div>{{/errors.surname}}
+    </div> 
+    <div class="form-group">
+        <label for="login">Uživatelské jméno</label>
+        <input type="text" class="form-control" id="login" name="login" value="{{employee.login}}" required>
+        {{#errors.login}}<div class="d-block invalid-feedback">{{errors.login}}</div>{{/errors.login}}
+    </div> 
+     <div class="form-group">
+        <label for="password">Heslo</label>
+        <input type="text" class="form-control" id="password" name="password" value="{{employee.password}}" required>
+        {{#errors.password}}<div class="d-block invalid-feedback">{{errors.password}}</div>{{/errors.password}}
+    </div>
+    <label>Admin</label>
+    <div>
+    {{#employee.admin}}
+      <input type="checkbox" value="1" name="admin" id="admin" checked>
+      <label for="admin">Ano</label>
+    {{/employee.admin}}
+    {{^employee.admin}} <input type="checkbox" value="1" name="admin" id="admin"><label for="admin">Ano</label>{{/employee.admin}}
+    {{#errors.admin}}<div class="d-block invalid-feedback">{{errors.admin}}</div>{{/errors.admin}}
+    </div>
+    </div>
+    <div class="form-group">
+        <label for="job">Pozice</label>
+        <input type="text" class="form-control" id="job" name="job" value="{{employee.job}}" required>
+        {{#errors.job}}<div class="d-block invalid-feedback">{{errors.job}}</div>{{/errors.job}}
+    </div>
+    <div class="form-group">
+        <label for="wage">Plat</label>
+        <input type="number" class="form-control" id="wage" name="wage" value="{{employee.wage}}" required>
+        {{#errors.wage}}<div class="d-block invalid-feedback">{{errors.wage}}</div>{{/errors.wage}}
+   </div>
+    <div class ="form-group">
+    <label>Vyber místnost</label>
+    <div>
+    {{#room}}
+    <input type="radio" value="{{rID}}" name="room" id="{{rID}}" required>
+    <label for="{rID}}">{{rName}} ({{rNo}})</label>
+    {{/room}}
+    {{#errors.room}}<div class="d-block invalid-feedback">{{errors.room}}</div>{{/errors.room}}
+    </div>
+    </div>
+   <div class ="form-group">
+    <div>
+    <fieldset>
+    <label>Vyber klíče</label>
+    <div>
+    {{#keys}}
+    <input type="checkbox" id="{{rID}}" name="keys[]" value ="{{rID}}">
+    <label for="{{rID}}">{{name}} ({{no}})</label>
+    {{/keys}}
+    </div>
+    {{#errors.keys}}<div class="d-block invalid-feedback">{{errors.keys}}</div>{{/errors.keys}}
+    </fieldset>
+    </div>
+    </div>
+
+    
+   
+    {{#employee.employee_id}}<input type="hidden" id = "employee_id" name="employee_id" value="{{employee.employee_id}}">{{/employee.employee_id}}
+
+    <button type="submit" class="btn btn-primary mt-3">Odeslat</button>
+</form>
+{{! upraveno až vyřešíme položku Rooms a chybové hlášky když bude input nevalidní}}

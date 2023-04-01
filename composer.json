@@ -1,0 +1,7 @@
+{
+    "require": {
+        "tracy/tracy": "^2.9",
+        "hassankhan/config": "^3.1",
+        "mustache/mustache": "^2.14"
+    }
+}
