@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . "/../../bootstrap/bootstrap.php";
 
 class RoomUpdatePage extends CRUDPage
@@ -7,8 +8,51 @@ class RoomUpdatePage extends CRUDPage
     private ?array $errors = [];
     private int $state;
 
+    protected function extraHTMLHeaders(): string
+    {
+        return '<link href="/styles/styleError" rel="stylesheet">';
+    }
+
+    protected function checkRoom($numberOfRoomFromForm, $phoneNumberFromForm)
+    {
+        //Vybrat číslo krom upravované místnosti
+        $stmtNoOfRoom = PDOProvider::get()->prepare("SELECT room_id FROM room WHERE no =:no AND room_id !=:roomId");
+        $stmtNoOfRoom->execute(['roomId' => $this->room->room_id, 'no' => $numberOfRoomFromForm]);
+
+        //Vybrat tel. číslo krom upravované místnosti
+        $stmtPhoneOfRoom = PDOProvider::get()->prepare("SELECT room_id FROM room WHERE phone =:phone AND room_id !=:roomId");
+        $stmtPhoneOfRoom->execute(['roomId' => $this->room->room_id, 'phone' => $phoneNumberFromForm]);
+
+        //Pokud je záznam
+        if ($stmtNoOfRoom->rowCount() !== 0) {
+            //Vypiš chybovou hlášku
+            $this->errors['no'] = "Toto číslo místnosti už má jiná místnost";
+        }
+        //Pokud je záznam 
+        if ($stmtPhoneOfRoom->rowCount() !== 0) {
+            //Vypiš chybovou hlášku
+            $this->errors['phone'] = "Toto tel. číslo místnosti už má jiná místnost";
+        }
+    }
+
+    private function isAdmin(): bool
+    {
+        $stmtAdmin = PDOProvider::get()->query("SELECT `admin` FROM employee WHERE employee_id ={$_SESSION['id']}");
+        $Admin = $stmtAdmin->fetch();
+
+        if ($Admin->admin === 1) {
+            return  true;
+        } else {
+            return  false;
+        }
+    }
+
     protected function prepare(): void
     {
+        if (!$this->isAdmin()) {
+            throw new ForbiddenException();
+        }
+
         parent::prepare();
         $this->findState();
         $this->title = "Upravit místnost";
@@ -32,6 +76,10 @@ class RoomUpdatePage extends CRUDPage
 
             //zkontroluj je, jinak formulář
             $this->errors = [];
+
+            //Kontrola čísla místnosti
+            $this->checkRoom($this->room->no, $this->room->phone);
+
             $isOk = $this->room->validate($this->errors);
             if (!$isOk) {
                 $this->state = self::STATE_FORM_REQUESTED;
@@ -52,7 +100,8 @@ class RoomUpdatePage extends CRUDPage
             [
                 'title' => $this->title,
                 'room' => $this->room,
-                'errors' => $this->errors
+                'errors' => $this->errors,
+                'extraHeaders' => $this->extraHTMLHeaders()
             ]
         );
     }
@@ -66,5 +115,9 @@ class RoomUpdatePage extends CRUDPage
     }
 }
 
-$page = new RoomUpdatePage();
-$page->render();
+if (empty($_SESSION['id'])) {
+    header("Location: /index.php");
+} else {
+    $page = new RoomUpdatePage();
+    $page->render();
+}

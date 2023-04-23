@@ -1,0 +1,31 @@
+
+<form method="post">
+    <h2>Login</h2>
+        {{#errors.error}}
+            <div class="error">
+        {{errors.error}}
+            </div>
+        {{/errors.error}}
+         {{#errors.login}}
+            <div class="error">
+        {{errors.login}}
+            </div>
+        {{/errors.login}}
+        {{#errors.password}}
+            <div class="error">
+        {{errors.password}}
+            </div>
+        {{/errors.password}}
+        <label>Jméno</label>
+        <input type="text" name="uname" placeholder="User name">
+   
+        <label>Heslo</label>
+        <input type="password" name="password" placeholder="Password">
+
+    <div class = "button-div">
+    <button type="submit">Login</button>
+    </div>
+</form>
+
+
+       

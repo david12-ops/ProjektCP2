@@ -1,7 +1,6 @@
 <?php
+session_start();
 require_once __DIR__ . "/../../bootstrap/bootstrap.php";
-
-
 
 class EmployeesPage extends CRUDPage
 {
@@ -10,6 +9,19 @@ class EmployeesPage extends CRUDPage
     public function __construct()
     {
         $this->title = "Výpis zaměstnanců";
+    }
+
+
+    private function isAdmin(): bool
+    {
+        $stmtAdmin = PDOProvider::get()->query("SELECT `admin` FROM employee WHERE employee_id ={$_SESSION['id']}");
+        $Admin = $stmtAdmin->fetch();
+
+        if ($Admin->admin === 1) {
+            return  true;
+        } else {
+            return  false;
+        }
     }
 
     protected function prepare(): void
@@ -39,7 +51,6 @@ class EmployeesPage extends CRUDPage
         }
     }
 
-
     protected function pageBody()
     {
         $html = "";
@@ -51,11 +62,19 @@ class EmployeesPage extends CRUDPage
         //získat data
         $emploeyees = Employee::getAll(['name' => 'ASC']);
         //prezentovat data
-        $html .= MustacheProvider::get()->render('employeeList', ['employee' => $emploeyees]);
 
+        if ($this->isAdmin()) {
+            $html .= MustacheProvider::get()->render('employeeList', ['employee' => $emploeyees]);
+        } else {
+            $html .= MustacheProvider::get()->render('employeeUserList', ['employee' => $emploeyees]);
+        }
         return $html;
     }
 }
 
-$page = new EmployeesPage();
-$page->render();
+if (empty($_SESSION['id'])) {
+    header("Location: /index.php");
+} else {
+    $page = new EmployeesPage();
+    $page->render();
+}

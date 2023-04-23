@@ -98,7 +98,6 @@ class Employee
         }
     }
 
-
     public function insert(): bool
     {
         //pridat Sloupce
@@ -112,13 +111,19 @@ class Employee
         return true;
     }
 
-    public function update(): bool
+    public function update($password): bool
     {
         if (!isset($this->employee_id) || !$this->employee_id)
             throw new Exception("Cannot update model without ID");
-        $query = "UPDATE " . self::DB_TABLE . " SET `login` = :login,`password` = :password,`admin` = :admin,`name` = :name, `surname` = :surname, `job` = :job, `wage` = :wage, `room` = :room WHERE `employee_id` = :employeeId";
-        $stmt = PDOProvider::get()->prepare($query);
-        return $stmt->execute(['employeeId' => $this->employee_id, 'login' => $this->login, 'password' => $this->password, 'admin' => $this->admin, 'name' => $this->name, 'surname' => $this->surname, 'job' => $this->job, 'wage' => $this->wage, 'room' => $this->room]);
+        if (trim($password)) {
+            $query = "UPDATE " . self::DB_TABLE . " SET `login` = :login,`password` = :password,`admin` = :admin,`name` = :name, `surname` = :surname, `job` = :job, `wage` = :wage, `room` = :room WHERE `employee_id` = :employeeId";
+            $stmt = PDOProvider::get()->prepare($query);
+            return $stmt->execute(['employeeId' => $this->employee_id, 'login' => $this->login, 'password' => $this->password, 'admin' => $this->admin, 'name' => $this->name, 'surname' => $this->surname, 'job' => $this->job, 'wage' => $this->wage, 'room' => $this->room]);
+        } else {
+            $query = "UPDATE " . self::DB_TABLE . " SET `login` = :login,`admin` = :admin,`name` = :name, `surname` = :surname, `job` = :job, `wage` = :wage, `room` = :room WHERE `employee_id` = :employeeId";
+            $stmt = PDOProvider::get()->prepare($query);
+            return $stmt->execute(['employeeId' => $this->employee_id, 'login' => $this->login, 'admin' => $this->admin, 'name' => $this->name, 'surname' => $this->surname, 'job' => $this->job, 'wage' => $this->wage, 'room' => $this->room]);
+        }
     }
 
     public function delete(): bool
@@ -133,33 +138,49 @@ class Employee
         return $stmt->execute(['employeeId' => $employeeId]);
     }
 
-    //Upravit
+
     public function validate(&$errors = []): bool
     {
-        if (!isset($this->login) || (!$this->login))
+        //upravit regex pro login a name room, pozice
+        if (!isset($this->login) || (!$this->login)) {
             $errors['login'] = 'Uživatelské jméno nesmí být prázdné';
-
-        if (!isset($this->password) || (!$this->password))
-            $errors['password'] = 'Heslo musí být vyplněné';
-
-        if (!isset($this->name) || (!$this->name))
+        } elseif (!preg_match('/^[A-Za-z]([A-Za-z_\-0-9])+$/u', $this->login)) {
+            $errors['login'] = 'login musí obsahovat jen písmena a čísla 0-9 nebo "-", "_". Písmena musí být na začátku.';
+        }
+        if (!isset($this->name) || (!$this->name)) {
             $errors['name'] = 'Jméno nesmí být prázdné';
-
-        if (!isset($this->surname) || (!$this->surname))
+        } elseif (!preg_match('/^[\p{L}]+$/u', $this->name)) {
+            $errors['name'] = 'Jméno musí obsahovat jen písmena s diakritikou';
+        }
+        if (!isset($this->surname) || (!$this->surname)) {
             $errors['surname'] = 'Příjmení musí být vyplněno';
+        } elseif (!preg_match('/^[\p{L}]+$/u', $this->surname)) {
+            $errors['surname'] = 'Příjmení musí obsahovat jen písmena s diakritikou';
+        }
+        ///^[\p{L}_\-]+$/u
+        ///^[\p{L}]+$/u
+        ///^[\p{L}_\-0-9]+$/u
 
-        if (!isset($this->job) || (!$this->job))
+        ///^([\p{L}|0-9][\p{L}\-0-9_-]*)$/u
+        if (!isset($this->job) || (!$this->job)) {
             $errors['job'] = 'Pozice musí být vyplněná';
-
-        if (!isset($this->wage))
+        } elseif (!preg_match('/^([\p{L}|0-9][\p{L}\-0-9_-]*)$/u', $this->job)) {
+            $errors['job'] = 'Pozice musí obsahovat jen písmena s diakritikou a čísla 0-9 nebo "-", "_". Písmena nebo čísla musí být na začátku.';
+        }
+        if (!isset($this->wage)) {
             $errors['wage'] = 'Plat musí být vyplněn';
-
+        } elseif ($this->wage < 0) {
+            $errors['wage'] = 'Plat nemůže být záporný';
+        } elseif (!intval($this->wage)) {
+            $errors['wage'] = 'Plat musí být číslo';
+        }
         if (!isset($this->room))
             $errors['room'] = 'Místnost musí být vyplněna';
 
         return count($errors) === 0;
     }
 
+    //?Heshovat
     public static function readPost(): self
     {
         $employee = new Employee();
@@ -193,9 +214,6 @@ class Employee
         $employee->wage = filter_input(INPUT_POST, 'wage', FILTER_VALIDATE_INT);
 
         $employee->room = filter_input(INPUT_POST, 'room', FILTER_VALIDATE_INT);
-
-        if (!$employee->room)
-            $employee->room = null;
 
         return $employee;
     }

@@ -43,7 +43,8 @@ abstract class BasePage
                 'title' => $this->title,
                 'pageHeader' => $this->pageHeader(),
                 'pageBody' => $this->pageBody(),
-                'pageFooter' => $this->pageFooter()
+                'pageFooter' => $this->pageFooter(),
+                'extraHeaders' => $this->extraHTMLHeaders()
             ];
             echo $m->render("page", $data);
         } catch (BaseException $e) {

@@ -1,0 +1,21 @@
+
+<div class = "popup">
+    <h2>
+        {{title}}
+    </h2>
+    <p>
+    {{description}}
+    </p>
+    <a href="list.php">Zpět</a>
+</div>
+<script type="text/javascript">
+    window.addEventListener("load", function () {
+        setTimeout(
+            function open(event) {
+                document.querySelector(".popup").style.display = "block";
+            },
+            300
+        )
+    });
+</script>
+

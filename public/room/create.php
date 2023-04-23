@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . "/../../bootstrap/bootstrap.php";
 
 class RoomCreatePage extends CRUDPage
@@ -7,8 +8,47 @@ class RoomCreatePage extends CRUDPage
     private ?array $errors = [];
     private int $state;
 
+    protected function extraHTMLHeaders(): string
+    {
+        return '<link href="/styles/styleError" rel="stylesheet">';
+    }
+
+    protected function checkNo($numberOfRoom, $phoneOfRoom): bool
+    {
+        $stmtNoOfRoom = PDOProvider::get()->prepare("SELECT room_id FROM room Where no =:no");
+        $stmtNoOfRoom->execute(['no' => $numberOfRoom]);
+
+        $stmtPhoneOfRoom = PDOProvider::get()->prepare("SELECT room_id FROM room Where phone =:phone");
+        $stmtPhoneOfRoom->execute(['phone' => $phoneOfRoom]);
+
+        if ($stmtNoOfRoom->rowCount() !== 0) {
+            $this->errors['no'] = "Toto číslo místnosti už má jiná místnost";
+        }
+        if ($stmtPhoneOfRoom->rowCount() !== 0) {
+            $this->errors['phone'] = "Toto tel. číslo místnosti už má jiná místnost";
+        }
+
+        return count($this->errors) === 0;
+    }
+
+    private function isAdmin(): bool
+    {
+        $stmtAdmin = PDOProvider::get()->query("SELECT `admin` FROM employee WHERE employee_id ={$_SESSION['id']}");
+        $Admin = $stmtAdmin->fetch();
+
+        if ($Admin->admin === 1) {
+            return  true;
+        } else {
+            return  false;
+        }
+    }
+
     protected function prepare(): void
     {
+        if (!$this->isAdmin()) {
+            throw new ForbiddenException();
+        }
+
         parent::prepare();
         $this->findState();
         $this->title = "Založit novou místnost";
@@ -25,8 +65,9 @@ class RoomCreatePage extends CRUDPage
             $this->room = Room::readPost();
             //zkontroluj je, jinak formulář
             $this->errors = [];
-            $isOk = $this->room->validate($this->errors);
-            if (!$isOk) {
+            $this->checkNo($this->room->no, $this->room->phone);
+            $this->room->validate($this->errors);
+            if ($this->errors) {
                 $this->state = self::STATE_FORM_REQUESTED;
             } else {
                 //ulož je
@@ -38,6 +79,19 @@ class RoomCreatePage extends CRUDPage
         }
     }
 
+    public function isUnique($value, $array): bool
+    {
+        $isunique = true;
+        foreach ($array as $val) {
+
+            if ($value === $val) {
+                $isunique = false;
+                break;
+            }
+        }
+        return $isunique;
+    }
+
     protected function pageBody()
     {
         return MustacheProvider::get()->render(
@@ -45,7 +99,8 @@ class RoomCreatePage extends CRUDPage
             [
                 'title' => $this->title,
                 'room' => $this->room,
-                'errors' => $this->errors
+                'errors' => $this->errors,
+                'extraHeaders' => $this->extraHTMLHeaders()
             ]
         );
     }
@@ -59,5 +114,9 @@ class RoomCreatePage extends CRUDPage
     }
 }
 
-$page = new RoomCreatePage();
-$page->render();
+if (empty($_SESSION['id'])) {
+    header("Location: /index.php");
+} else {
+    $page = new RoomCreatePage();
+    $page->render();
+}

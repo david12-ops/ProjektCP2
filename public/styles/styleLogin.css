@@ -1,0 +1,70 @@
+.error {
+    background: #F2DEDE;
+    color: #A94442;
+    padding: 10px;
+    width: 95%;
+    border-radius: 5px;
+    margin: auto;
+    margin-top: 20px;
+    text-align: center;
+}
+
+body {
+    background: #1690A7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+* {
+    font-family: sans-serif;
+    box-sizing: border-box;
+}
+
+form {
+    width: 500px;
+    border: 2px solid #ccc;
+    padding: 30px;
+    background: #fff;
+    border-radius: 15px;
+    min-height: min-content;
+}
+
+input {
+    display: block;
+    border: 2px solid #ccc;
+    width: 95%;
+    padding: 10px;
+    margin: auto;
+    border-radius: 10px;
+}
+
+.button-div {
+    display: flex;
+    justify-content: center;
+}
+
+div button {
+    background: #555;
+    padding: 10px 15px;
+    color: #fff;
+    border-radius: 10px;
+    margin-top: 20px;
+    border: none;
+}
+
+button:hover {
+    opacity: .7;
+}
+
+label {
+    color: #888;
+    font-size: 15px;
+    padding: 10px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}

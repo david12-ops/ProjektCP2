@@ -4,7 +4,7 @@
   },
   "db": {
     "host": "127.0.0.1",
-    "database": "c156DBIP",
+    "database": "ip_3",
     "charset": "utf8mb4",
     "user": "fill in local config",
     "password": "fill in local config"

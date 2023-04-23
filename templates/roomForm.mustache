@@ -3,21 +3,20 @@
     <div class="form-group">
         <label for="name">Název</label>
         <input type="text" class="form-control" id="name" name="name" value="{{room.name}}" required>
-        {{#errors.name}}<div class="d-block invalid-feedback">{{errors.name}}</div>{{/errors.name}}
+        {{#errors.name}}<div class="error">{{errors.name}}</div>{{/errors.name}}
     </div>
     <div class="form-group">
         <label for="phone">Telefon</label>
         <input type="text" class="form-control" id="phone" name="phone" value="{{room.phone}}">
-        {{#errors.phone}}<div class="d-block invalid-feedback">{{errors.phone}}</div>{{/errors.phone}}
+        {{#errors.phone}}<div class="error">{{errors.phone}}</div>{{/errors.phone}}
     </div>
     <div class="form-group">
         <label for="no">Číslo</label>
         <input type="text" class="form-control" id="no" name="no" value="{{room.no}}" required>
-        {{#errors.no}}<div class="d-block invalid-feedback">{{errors.no}}</div>{{/errors.no}}
+        {{#errors.no}}<div class="error">{{errors.no}}</div>{{/errors.no}}
     </div>
     {{#room.room_id}}<input type="hidden" name="room_id" value="{{room.room_id}}">{{/room.room_id}}
 
     <button type="submit" class="btn btn-primary mt-3">Odeslat</button>
 
 </form>
-{{! upraveno až vyřešíme chybové hlášky když bude input nevalidní}}

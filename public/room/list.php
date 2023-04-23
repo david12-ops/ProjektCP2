@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . "/../../bootstrap/bootstrap.php";
 
 class RoomsPage extends CRUDPage
@@ -8,6 +9,18 @@ class RoomsPage extends CRUDPage
     public function __construct()
     {
         $this->title = "Výpis místností";
+    }
+
+    private function isAdmin(): bool
+    {
+        $stmtAdmin = PDOProvider::get()->query("SELECT `admin` FROM employee WHERE employee_id ={$_SESSION['id']}");
+        $Admin = $stmtAdmin->fetch();
+
+        if ($Admin->admin === 1) {
+            return  true;
+        } else {
+            return  false;
+        }
     }
 
     protected function prepare(): void
@@ -49,11 +62,19 @@ class RoomsPage extends CRUDPage
         //získat data
         $rooms = Room::getAll(['name' => 'ASC']);
         //prezentovat data
-        $html .= MustacheProvider::get()->render('roomList', ['rooms' => $rooms]);
+        if ($this->isAdmin() === true) {
+            $html .= MustacheProvider::get()->render('roomList', ['rooms' => $rooms]);
+        } else {
+            $html .= MustacheProvider::get()->render('roomUserList', ['rooms' => $rooms]);
+        }
 
         return $html;
     }
 }
 
-$page = new RoomsPage();
-$page->render();
+if (empty($_SESSION['id'])) {
+    header("Location: /index.php");
+} else {
+    $page = new RoomsPage();
+    $page->render();
+}

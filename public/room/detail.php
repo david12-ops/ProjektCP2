@@ -1,9 +1,10 @@
 <?php
+session_start();
+
 require_once __DIR__ . "/../../bootstrap/bootstrap.php";
 
 class RoomDetailPage extends BasePage
 {
-    //upozornit na to že zamšstnanec ma klic od místnosti
     private $room;
     private $employees;
     private $key;
@@ -41,5 +42,9 @@ class RoomDetailPage extends BasePage
     }
 }
 
-$page = new RoomDetailPage();
-$page->render();
+if (empty($_SESSION['id'])) {
+    header("Location: /index.php");
+} else {
+    $page = new RoomDetailPage();
+    $page->render();
+}

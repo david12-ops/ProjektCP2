@@ -1,0 +1,21 @@
+<h2>{{title}}</h2>
+<form method = "post">
+     <div class="form-group">
+        <label for="password">Heslo</label>
+        <input type="text" class="form-control" id="password" name="password" required>
+        {{#errors.password}}<div class="error">{{errors.password}}</div>{{/errors.password}}
+    </div>
+     <div class="form-group">
+        <label for="newPassword">Nové heslo</label>
+        <input type="text" class="form-control" id="newPassword" name="newPassword" required>
+        {{#errors.newPassword}}<div class="error">{{errors.newPassword}}</div>{{/errors.newPassword}}
+    </div>
+     <div class="form-group">
+        <label for="confirmPass">Podvrďte nové heslo</label>
+        <input type="text" class="form-control" id="confirmPass" name="confirmPass" required>
+        {{#errors.confirmPass}}<div class="error">{{errors.confirmPass}}</div>{{/errors.confirmPass}}
+    </div>
+    {{#employee.employee_id}}<input type="hidden" id = "employee_id" name="employee_id" value="{{employee.employee_id}}">{{/employee.employee_id}}
+
+    <button type="submit" class="btn btn-primary mt-3">Odeslat</button>
+</form>

@@ -119,11 +119,25 @@ class Room
 
     public function validate(&$errors = []): bool
     {
-        if (!isset($this->name) || (!$this->name))
-            $errors['name'] = 'Jméno nesmí být prázdné';
-
-        if (!isset($this->no) || (!$this->no))
-            $errors['no'] = 'Číslo musí být vyplněno';
+        if (!isset($this->name) || (!$this->name)) {
+            $errors['name'] = 'Název nesmí být prázdný';
+        } elseif (mb_strlen($this->name, "UTF-8") > 11) {
+            $errors['name'] = 'Název je moc dlouhý';
+        } elseif (!preg_match('/^([\p{L}|0-9][\p{L}\-0-9_-]*)$/u', $this->name)) {
+            $errors['name'] = 'Název místnosti musí obsahovat jen písmena s diakritikou a čísla 0-9 nebo "-", "_".  Písmena nebo čísla musí být na začátku.';
+        }
+        if (isset($this->phone)) {
+            if (!filter_var($this->phone, FILTER_VALIDATE_INT)) {
+                $errors['phone'] = 'Špatný format tel. čísla, musí obsahovat pouze čísla';
+            }
+        }
+        if (!isset($this->no) || (!$this->no)) {
+            $errors['no'] = 'Číslo místnosti musí být vyplněno';
+        } elseif (!intval($this->no)) {
+            $errors['no'] = 'Číslo místnosti musí být číslo';
+        } elseif (mb_strlen($this->no, "UTF-8") > 11) {
+            $errors['no'] = 'Číslo místnosti je moc dlouhý';
+        }
 
         return count($errors) === 0;
     }
@@ -131,6 +145,7 @@ class Room
     public static function readPost(): self
     {
         $room = new Room();
+
         $room->room_id = filter_input(INPUT_POST, 'room_id', FILTER_VALIDATE_INT);
 
         $room->name = filter_input(INPUT_POST, 'name');

@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 require_once __DIR__ . "/../../bootstrap/bootstrap.php";
 
 class EmployeeDetailPage extends BasePage
@@ -6,12 +8,6 @@ class EmployeeDetailPage extends BasePage
     private $keys;
     private $rooms;
     private $employee;
-
-    protected function FetchAndExecute($stmt, $id,)
-    {
-        $stmt->execute(['employeeId' => $id]);
-        $this->rooms = $stmt->fetchAll();
-    }
 
     protected function prepare(): void
     {
@@ -38,9 +34,6 @@ class EmployeeDetailPage extends BasePage
         $this->title = "Detail zaměstnance {$this->employee->name} {$subSurname}.";
     }
 
-
-
-    //Wage zobrazit pro admina
     protected function pageBody()
     {
         //prezentovat data
@@ -51,5 +44,9 @@ class EmployeeDetailPage extends BasePage
     }
 }
 
-$page = new EmployeeDetailPage();
-$page->render();
+if (empty($_SESSION['id'])) {
+    header("Location: /index.php");
+} else {
+    $page = new EmployeeDetailPage();
+    $page->render();
+}
