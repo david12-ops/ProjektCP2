@@ -1,7 +1,7 @@
 {
   "debug": true,
   "db": {
-    "user": "www-aplikace",
-    "password": "Bezpe4n0Heslo."
+    "user": "example",
+    "password": "example"
   }
 }
