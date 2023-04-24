@@ -18,18 +18,16 @@ class EmployeeUpdatePage extends CRUDPage
         return '<link href="/styles/styleError.css" rel="stylesheet">';
     }
 
-    protected function checkKey(): bool
+    protected function checkKey()
     {
         $this->keys = filter_input(INPUT_POST, 'keys', FILTER_DEFAULT, FILTER_FORCE_ARRAY);
 
         if (!$this->keys || !in_array($this->employee->room, $this->keys)) {
             $this->errors['keys'] = "Zaměstnanec by měl mít minimálně klíč od své nové místnosti";
         }
-
-        return count($this->errors) === 0;
     }
 
-    protected function checkLogin($loginFromForm): bool
+    protected function checkLogin($loginFromForm)
     {
         //Vybrat login, který ale nemá login upravovaného zaměstnance
         $stmtLogin = PDOProvider::get()->prepare("SELECT login FROM employee WHERE login =:login AND employee_id !=:employeeId");
@@ -39,8 +37,6 @@ class EmployeeUpdatePage extends CRUDPage
         if ($stmtLogin->rowCount() !== 0) {
             $this->errors['login'] = "Toto uživatelské jméno už má jiný zaměstnanec";
         }
-
-        return count($this->errors) === 0;
     }
 
     protected function updateKey($success)
@@ -60,9 +56,9 @@ class EmployeeUpdatePage extends CRUDPage
         }
     }
 
-    protected function checkPassword($password): bool
+    protected function checkPassword($password)
     {
-        //Načti z iputu potvrzovací heslo
+        //Načti z inputu potvrzovací heslo
         $this->confirmPass = filter_input(INPUT_POST, 'confirmPassword', FILTER_DEFAULT);
         //preg_match('`[A-Z]`',$password)  jedno velké písmeno 
         //preg_match('`[a-z]`',$password)  jedno malé písmeno 
@@ -88,8 +84,6 @@ class EmployeeUpdatePage extends CRUDPage
         if (!trim($password) && trim($this->confirmPass)) {
             $this->errors['confirmPassword'] = 'Pro potvrzení hesla je třeba vyplnit vaše heslo';
         }
-
-        return count($this->errors) === 0;
     }
 
     private function isAdmin(): bool
@@ -104,15 +98,13 @@ class EmployeeUpdatePage extends CRUDPage
         }
     }
 
-    protected function checkAdminCheckbox($isAdmin, $id): bool
+    protected function checkAdminCheckbox($isAdmin, $id)
     {
         if ($id === $_SESSION['id']) {
             if ($isAdmin === 0) {
                 $this->errors['admin'] = 'Přihlášený admin nemůže upravovat své práva';
             }
         }
-
-        return count($this->errors) === 0;
     }
 
     protected function prepare(): void

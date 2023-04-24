@@ -11,7 +11,7 @@ class FirstBage extends CRUDPage
 
     protected function extraHTMLHeaders(): string
     {
-        return '<link href="/styles/styleError" rel="stylesheet">';
+        return '<link href="../styles/styleError.css" rel="stylesheet">';
     }
 
     private ?employee $employee;
@@ -28,15 +28,17 @@ class FirstBage extends CRUDPage
         //preg_match('`[a-z]`',$password)  jedno malé písmeno 
         //preg_match('`[0-9]`',$password)  jedno číslo 
         //preg_match('`[\$\*\.,+\-=@]`', $this->password) jeden ze symbolů 
-        if (trim($password)) {
-            if (strlen($password) < 8) {
-                $this->errors['newPassword'] = 'Heslo musí být minimálně 8 znaků dlouhé';
-                $error = 1;
-            } elseif (!preg_match('`[A-Z]`', $password) || !preg_match('`[a-z]`', $password) || !preg_match('`[0-9]`', $password) || !preg_match('`[\$\*\.,+\-=@]`', $password)) {
-                $this->errors['newPassword'] = 'Heslo musí obsahovat malé a velké písmeno, číslice a symboly z těchto vybraných ($,*,tečka(.),čárka(,),+,-,=,@)';
-                $error = 1;
-            }
+        if (!$password) {
+            $this->errors['newPassword'] = 'Nové heslo musí být vyplněné krom mezer';
+            $error = 1;
+        } elseif (strlen($password) < 8) {
+            $this->errors['newPassword'] = 'Heslo musí být minimálně 8 znaků dlouhé';
+            $error = 1;
+        } elseif (!preg_match('`[A-Z]`', $password) || !preg_match('`[a-z]`', $password) || !preg_match('`[0-9]`', $password) || !preg_match('`[\$\*\.,+\-=@]`', $password)) {
+            $this->errors['newPassword'] = 'Heslo musí obsahovat malé a velké písmeno, číslice a symboly z těchto vybraných ($,*,tečka(.),čárka(,),+,-,=,@)';
+            $error = 1;
         }
+
         return $error;
     }
 

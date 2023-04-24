@@ -17,7 +17,7 @@
     </div> 
     <div class="form-group">
         <label for="password">Heslo</label>
-        <input type="text" class="form-control" id="password" name="password">
+        <input type="password" class="form-control" id="password" name="password">
         {{#errors.password}}<div class="error">{{errors.password}}</div>{{/errors.password}}
     </div>
      <div class="form-group">
@@ -43,7 +43,7 @@
     </div>
     <div class="form-group">
         <label for="wage">Plat</label>
-        <input type="number" class="form-control" id="wage" name="wage" value="{{employee.wage}}" required>
+        <input type="text" class="form-control" id="wage" name="wage" value="{{employee.wage}}" required>
         {{#errors.wage}}<div class="error">{{errors.wage}}</div>{{/errors.wage}}
    </div>
     <div class ="form-group">

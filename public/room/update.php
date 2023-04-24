@@ -10,10 +10,10 @@ class RoomUpdatePage extends CRUDPage
 
     protected function extraHTMLHeaders(): string
     {
-        return '<link href="/styles/styleError" rel="stylesheet">';
+        return '<link href="/styles/styleError.css" rel="stylesheet">';
     }
 
-    protected function checkRoom($numberOfRoomFromForm, $phoneNumberFromForm)
+    protected function checkNoPhone($numberOfRoomFromForm, $phoneNumberFromForm)
     {
         //Vybrat číslo krom upravované místnosti
         $stmtNoOfRoom = PDOProvider::get()->prepare("SELECT room_id FROM room WHERE no =:no AND room_id !=:roomId");
@@ -77,11 +77,11 @@ class RoomUpdatePage extends CRUDPage
             //zkontroluj je, jinak formulář
             $this->errors = [];
 
-            //Kontrola čísla místnosti
-            $this->checkRoom($this->room->no, $this->room->phone);
+            //Kontrola tel. čísla a čísla místnosti na unikátnost
+            $this->checkNoPhone($this->room->no, $this->room->phone);
 
             $isOk = $this->room->validate($this->errors);
-            if (!$isOk) {
+            if ($this->errors) {
                 $this->state = self::STATE_FORM_REQUESTED;
             } else {
                 //ulož je

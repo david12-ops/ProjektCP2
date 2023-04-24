@@ -1,7 +1,4 @@
 <?php
-
-// use function PHPSTORM_META\type;
-
 session_start();
 require_once __DIR__ . "/../../bootstrap/bootstrap.php";
 
@@ -19,20 +16,18 @@ class EmployeeCreatePage extends CRUDPage
         return '<link href="/styles/styleError.css" rel="stylesheet">';
     }
 
-    protected function checkKey(): bool
+    protected function checkKey()
     {
         $this->keys = filter_input(INPUT_POST, 'keys', FILTER_DEFAULT, FILTER_FORCE_ARRAY);
 
         if (!$this->keys || !in_array($this->employee->room, $this->keys)) {
             $this->errors['keys'] = "Zaměstnanec by měl mít minimálně klíč od své nové místnosti";
         }
-
-        return count($this->errors) === 0;
     }
 
-    protected function checkPassword($password): bool
+    protected function checkPassword($password)
     {
-        //Načti z iputu potvrzovací heslo
+        //Načti z inputu potvrzovací heslo
         $this->confirmPass = filter_input(INPUT_POST, 'confirmPassword', FILTER_DEFAULT);
         //preg_match('`[A-Z]`',$password)  at least one upper case 
         //preg_match('`[a-z]`',$password)  at least one lower case 
@@ -50,11 +45,9 @@ class EmployeeCreatePage extends CRUDPage
         if (trim($password) !== trim($this->confirmPass)) {
             $this->errors['confirmPassword'] = 'Hesla se neshodují';
         }
-
-        return count($this->errors) === 0;
     }
 
-    protected function checkLogin($login): bool
+    protected function checkLogin($login)
     {
         //Vybrat employee_id toho kdo má potencionálně stejý login
         $stmtLoginOfUser = PDOProvider::get()->prepare("SELECT employee_id FROM employee Where login =:login");
@@ -65,8 +58,6 @@ class EmployeeCreatePage extends CRUDPage
             //Vypíše chybu
             $this->errors['login'] = "Toto uživatelské jméno už má jiný zaměstnanec";
         }
-
-        return count($this->errors) === 0;
     }
 
     protected function insertKey($success)

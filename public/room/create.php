@@ -10,10 +10,10 @@ class RoomCreatePage extends CRUDPage
 
     protected function extraHTMLHeaders(): string
     {
-        return '<link href="/styles/styleError" rel="stylesheet">';
+        return '<link href="/styles/styleError.css" rel="stylesheet">';
     }
 
-    protected function checkNo($numberOfRoom, $phoneOfRoom): bool
+    protected function checkNoPhone($numberOfRoom, $phoneOfRoom)
     {
         $stmtNoOfRoom = PDOProvider::get()->prepare("SELECT room_id FROM room Where no =:no");
         $stmtNoOfRoom->execute(['no' => $numberOfRoom]);
@@ -27,8 +27,6 @@ class RoomCreatePage extends CRUDPage
         if ($stmtPhoneOfRoom->rowCount() !== 0) {
             $this->errors['phone'] = "Toto tel. číslo místnosti už má jiná místnost";
         }
-
-        return count($this->errors) === 0;
     }
 
     private function isAdmin(): bool
@@ -65,7 +63,9 @@ class RoomCreatePage extends CRUDPage
             $this->room = Room::readPost();
             //zkontroluj je, jinak formulář
             $this->errors = [];
-            $this->checkNo($this->room->no, $this->room->phone);
+            //Validace tel. čísla a čísla místnosti na unikátnost
+            $this->checkNoPhone($this->room->no, $this->room->phone);
+            //Validace dat upravované místnosti
             $this->room->validate($this->errors);
             if ($this->errors) {
                 $this->state = self::STATE_FORM_REQUESTED;

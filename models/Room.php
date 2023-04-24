@@ -117,29 +117,27 @@ class Room
         return $stmt->execute(['roomId' => $roomId]);
     }
 
-    public function validate(&$errors = []): bool
+    public function validate(&$errors = [])
     {
         if (!isset($this->name) || (!$this->name)) {
-            $errors['name'] = 'Název nesmí být prázdný';
+            $errors['name'] = 'Název nesmí být prázdný.';
         } elseif (mb_strlen($this->name, "UTF-8") > 11) {
-            $errors['name'] = 'Název je moc dlouhý';
+            $errors['name'] = 'Název je moc dlouhý. Max 10 znaků (písmena + číslice + povolené symboly).';
         } elseif (!preg_match('/^([\p{L}|0-9][\p{L}\-0-9_-]*)$/u', $this->name)) {
             $errors['name'] = 'Název místnosti musí obsahovat jen písmena s diakritikou a čísla 0-9 nebo "-", "_".  Písmena nebo čísla musí být na začátku.';
         }
+
         if (isset($this->phone)) {
-            if (!filter_var($this->phone, FILTER_VALIDATE_INT)) {
-                $errors['phone'] = 'Špatný format tel. čísla, musí obsahovat pouze čísla';
+            if (!preg_match('/^([0-9]{3}\s){2}[0-9]{3}$/', $this->phone)) {
+                $errors['phone'] = 'Špatný format tel. čísla, musí obsahovat pouze čísla např. (987 654 432).';
             }
         }
-        if (!isset($this->no) || (!$this->no)) {
-            $errors['no'] = 'Číslo místnosti musí být vyplněno';
-        } elseif (!intval($this->no)) {
-            $errors['no'] = 'Číslo místnosti musí být číslo';
-        } elseif (mb_strlen($this->no, "UTF-8") > 11) {
-            $errors['no'] = 'Číslo místnosti je moc dlouhý';
-        }
 
-        return count($errors) === 0;
+        if (!isset($this->no) || (!$this->no)) {
+            $errors['no'] = 'Číslo místnosti musí být vyplněno.';
+        } elseif (!preg_match('/^([0-9]{1,10})$/', $this->no)) {
+            $errors['no'] = 'Číslo místnosti musí být číslo bez obsahu písmen a znaků (s,@,/-, mezery a i mezery mezi čísli atd..) s maximálním počtem 10 čísel.';
+        }
     }
 
     public static function readPost(): self

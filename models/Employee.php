@@ -139,48 +139,52 @@ class Employee
     }
 
 
-    public function validate(&$errors = []): bool
+    public function validate(&$errors = [])
     {
-        //upravit regex pro login a name room, pozice
         if (!isset($this->login) || (!$this->login)) {
-            $errors['login'] = 'Uživatelské jméno nesmí být prázdné';
+            $errors['login'] = 'Uživatelské jméno nesmí být prázdné.';
+        } elseif (mb_strlen($this->login, "UTF-8") > 15) {
+            $errors['login'] = 'Uživaztelské jméno je moc dlouhý. Max 15 znaků (písmena + číslice + povolené symboly).';
         } elseif (!preg_match('/^[A-Za-z]([A-Za-z_\-0-9])+$/u', $this->login)) {
             $errors['login'] = 'login musí obsahovat jen písmena a čísla 0-9 nebo "-", "_". Písmena musí být na začátku.';
         }
-        if (!isset($this->name) || (!$this->name)) {
-            $errors['name'] = 'Jméno nesmí být prázdné';
-        } elseif (!preg_match('/^[\p{L}]+$/u', $this->name)) {
-            $errors['name'] = 'Jméno musí obsahovat jen písmena s diakritikou';
-        }
-        if (!isset($this->surname) || (!$this->surname)) {
-            $errors['surname'] = 'Příjmení musí být vyplněno';
-        } elseif (!preg_match('/^[\p{L}]+$/u', $this->surname)) {
-            $errors['surname'] = 'Příjmení musí obsahovat jen písmena s diakritikou';
-        }
-        ///^[\p{L}_\-]+$/u
-        ///^[\p{L}]+$/u
-        ///^[\p{L}_\-0-9]+$/u
 
-        ///^([\p{L}|0-9][\p{L}\-0-9_-]*)$/u
+        if (!isset($this->name) || (!$this->name)) {
+            $errors['name'] = 'Jméno nesmí být prázdné.';
+        } elseif (mb_strlen($this->name, "UTF-8") > 15) {
+            $errors['name'] = 'Jméno je moc dlouhý. Max 15 znaků (písmena + číslice + povolené symboly).';
+        } elseif (!preg_match('/^[\p{L}]+$/u', $this->name)) {
+            $errors['name'] = 'Jméno musí obsahovat jen písmena s diakritikou.';
+        }
+
+        if (!isset($this->surname) || (!$this->surname)) {
+            $errors['surname'] = 'Příjmení musí být vyplněno.';
+        } elseif (mb_strlen($this->surname, "UTF-8") > 15) {
+            $errors['surname'] = 'Příjmení je moc dlouhý. Max 15 znaků (písmena + číslice + povolené symboly).';
+        } elseif (!preg_match('/^[\p{L}]+$/u', $this->surname)) {
+            $errors['surname'] = 'Příjmení musí obsahovat jen písmena s diakritikou.';
+        }
+
         if (!isset($this->job) || (!$this->job)) {
-            $errors['job'] = 'Pozice musí být vyplněná';
+            $errors['job'] = 'Pozice musí být vyplněná.';
+        } elseif (mb_strlen($this->job, "UTF-8") > 11) {
+            $errors['job'] = 'Název pozice je moc dlouhý. Max 10 znaků (písmena + číslice + povolené symboly).';
         } elseif (!preg_match('/^([\p{L}|0-9][\p{L}\-0-9_-]*)$/u', $this->job)) {
             $errors['job'] = 'Pozice musí obsahovat jen písmena s diakritikou a čísla 0-9 nebo "-", "_". Písmena nebo čísla musí být na začátku.';
         }
-        if (!isset($this->wage)) {
-            $errors['wage'] = 'Plat musí být vyplněn';
-        } elseif ($this->wage < 0) {
-            $errors['wage'] = 'Plat nemůže být záporný';
-        } elseif (!intval($this->wage)) {
-            $errors['wage'] = 'Plat musí být číslo';
-        }
-        if (!isset($this->room))
-            $errors['room'] = 'Místnost musí být vyplněna';
 
-        return count($errors) === 0;
+        if (!isset($this->wage)) {
+            $errors['wage'] = 'Plat musí být vyplněn.';
+        } elseif ($this->wage < 0) {
+            $errors['wage'] = 'Plat nesmí být záporný.';
+        } elseif (!preg_match('/^[0-9]{1,10}$/u', $this->wage)) {
+            $errors['wage'] = 'Plat je přílíš velký. Max 10 čísel.';
+        }
+
+        if (!isset($this->room))
+            $errors['room'] = 'Místnost musí být vyplněna.';
     }
 
-    //?Heshovat
     public static function readPost(): self
     {
         $employee = new Employee();
